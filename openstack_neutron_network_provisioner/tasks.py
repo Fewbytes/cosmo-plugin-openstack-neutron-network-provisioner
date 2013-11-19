@@ -72,7 +72,7 @@ def _init_client():
 
 def _init_keystone_client():
     config_path = os.getenv('KEYSTONE_CONFIG_PATH', os.path.expanduser('~/keystone_config.json'))
-    with open(config_path, 'r') as f:
+    with open(config_path) as f:
         cfg = json.loads(f.read())
     # Not the same config as nova client. Same parameters, different names.
     args = {field: cfg[field] for field in ('username', 'password', 'tenant_name', 'auth_url')}
