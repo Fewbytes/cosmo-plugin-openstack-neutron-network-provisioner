@@ -1,18 +1,13 @@
 # vim: ts=4 sw=4 et
 import json
-import logging
 import os
 
-from neutronclient.neutron import client
+# Celery
+from celery import task
 
+# OpenStack
 import keystoneclient.v2_0.client as ksclient
-
-
-logging.basicConfig(level=logging.DEBUG)
-
-
-def task(f):
-    return f
+from neutronclient.neutron import client
 
 
 @task
@@ -95,7 +90,7 @@ def _get_network_by_name_or_fail(neutron_client, name):
     network = _get_network_by_name(neutron_client, name)
     if network:
         return network
-    raise ValueError("Lookup of network by name failed. Could not find a network with name {0}")
+    raise ValueError("Lookup of network by name failed. Could not find a network with name {0}".format(name))
 
 
 if __name__ == '__main__':
