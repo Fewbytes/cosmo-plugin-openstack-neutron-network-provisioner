@@ -2,6 +2,7 @@
 imports:
     - 'cloudify.types'
     - 'neutron-network-type.yaml'
+    - 'neutron-subnet-type.yaml'
 
 
 blueprint:
@@ -24,4 +25,29 @@ blueprint:
                             type: 'state_equals'
                             properties:
                                 service: 'network status'
+                                state: 'running'
+        -
+            name: 'neutron_subnet'
+            type: 'neutron_subnet'
+            relationships:
+                -
+                    type: 'cloudify.relationships.contained_in'
+                    target: 'neutron_network'
+            interfaces:
+                    - 'cloudify.interfaces.subnet_provisioner'
+            properties:
+                network_name: 'neutron_network_test'
+                subnet:
+                    name: 'neutron_subnet_test'
+                    ip_version: 4
+                    cidr: '10.10.10.0/24'
+
+            policies:
+                -
+                    name: 'start_detection_policy'
+                    rules:
+                        -
+                            type: 'state_equals'
+                            properties:
+                                service: 'subnet status'
                                 state: 'running'
