@@ -9,9 +9,11 @@ from celery import task
 import keystoneclient.v2_0.client as ksclient
 from neutronclient.neutron import client
 
+# Cosmo
+from cosmo.events import send_event, get_cosmo_properties
 
 @task
-def provision(network, **kwargs):
+def provision(__cloudify_id, network, **kwargs):
     neutron_client = _init_client()
     if _get_network_by_name(neutron_client, network['name']):
         raise RuntimeError("Can not provision network with name '{0}' because network with such name already exists"
@@ -23,6 +25,10 @@ def provision(network, **kwargs):
             'admin_state_up': True
         }
     })
+    # XXX: not really a host, signifies event origin name for riemann
+    host = get_cosmo_properties()['ip']
+    # TODO: change host to "network-NAME"
+    send_event(__cloudify_id, host, "network status", "state", "running")
 
 @task
 def start(network, **kwargs):
